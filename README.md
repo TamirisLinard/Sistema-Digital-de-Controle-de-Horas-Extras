@@ -6,14 +6,12 @@
 
 **Professora:** Fabiana Bravim de Freitas
 
-
 ## Descrição
 O sistema permite que gestores e funcionários façam login, registrem seus pontos diários e acompanhem seus dados de horas trabalhadas.
 Com base nesses registros, o programa calcula automaticamente:
 - Horas extras de 50% (durante a semana)
 - Horas extras de 100% (fins de semana e feriados)
 - Valor total das horas extras e o salário final do funcionário
-
 
 ## Sumário
 - Estrutura do Código
@@ -43,11 +41,9 @@ Com base nesses registros, o programa calcula automaticamente:
   - Tabela de salário final (salário base + adicionais)
   - Listagem de usuários cadastrados
 
-
 :small_orange_diamond: **Login**
   - Login individual por matrícula e senha
   - Menu diferenciado para gestor e funcionário
-
 
 ## Estrutura do Código
 | Seção   | Função      | 
@@ -58,9 +54,6 @@ Com base nesses registros, o programa calcula automaticamente:
 | Relatórios   | Cálculo e exibição de horas extras e salário final      | 
 | Menus  | Interface textual interativa para cada tipo de usuário     | 
 | Funções auxiliares   | Leitura de strings, limpeza de buffer e cálculos de tempo      | 
-
-
-
 
 ## Como Compilar e Executar
 :small_orange_diamond: **Pré-requisitos**
