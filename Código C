@@ -1,0 +1,343 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define MAX_USUARIOS 100
+#define MAX_PONTOS 200
+#define JORNADA_MENSAL 220
+#define ADICIONAL_SEMANA 1.5
+#define ADICIONAL_FIMSEMANA 2.0
+#define MAX_MATRICULA_LEN 10
+
+typedef struct {
+    char nome[50];
+    char matricula[11];
+    char tipo[20];
+    char senha[20];
+    float salario;
+} Usuario;
+
+typedef struct {
+    char matricula[11];
+    char tipoPonto[20];
+    char data[15];
+    int entradaHora, entradaMin;
+    int saidaHora, saidaMin;
+} RegistroPonto;
+
+Usuario usuarios[MAX_USUARIOS];
+RegistroPonto pontos[MAX_PONTOS];
+
+int totalUsuarios = 0;
+int totalPontos = 0;
+
+// ------------------ FUNÇÕES AUXILIARES ------------------
+void limparBuffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+void lerString(char *dest, int tamanho, const char *mensagem) {
+    printf("%s", mensagem);
+    if (fgets(dest, tamanho, stdin) != NULL) {
+        dest[strcspn(dest, "\n")] = '\0'; // remove '\n'
+    }
+}
+
+// ------------------ CADASTRO ------------------
+void cadastrarUsuario() {
+    if (totalUsuarios >= MAX_USUARIOS) {
+        printf("Limite de cadastros atingido!\n");
+        return;
+    }
+
+    Usuario novo;
+    printf("\n--- Cadastro de Usuario ---\n");
+
+    lerString(novo.nome, sizeof(novo.nome), "Nome: ");
+
+    do {
+        lerString(novo.matricula, sizeof(novo.matricula), "Matricula (ate 10 numeros): ");
+        if (strlen(novo.matricula) > MAX_MATRICULA_LEN) {
+            printf("Erro: A matricula deve ter no maximo 10 numeros.\n");
+        }
+    } while (strlen(novo.matricula) > MAX_MATRICULA_LEN);
+
+    lerString(novo.tipo, sizeof(novo.tipo), "Tipo (funcionario/gestor): ");
+    lerString(novo.senha, sizeof(novo.senha), "Senha: ");
+
+    printf("Salario mensal (R$): ");
+    while (scanf("%f", &novo.salario) != 1) {
+        printf("Entrada invalida. Digite um numero: ");
+        limparBuffer();
+    }
+    limparBuffer();
+
+    usuarios[totalUsuarios++] = novo;
+    printf("\nUsuario cadastrado com sucesso!\n");
+}
+
+// ------------------ PONTO ------------------
+void baterPonto(char matricula[], char tipo[]) {
+    if (totalPontos >= MAX_PONTOS) {
+        printf("Limite de registros atingido!\n");
+        return;
+    }
+
+    RegistroPonto p;
+    strcpy(p.matricula, matricula);
+    strcpy(p.tipoPonto, tipo);
+
+    printf("\n--- Registro de ponto (%s) ---\n", tipo);
+    lerString(p.data, sizeof(p.data), "Data (DD/MM/AAAA): ");
+
+    printf("Hora de entrada (HH MM): ");
+    while (scanf("%d %d", &p.entradaHora, &p.entradaMin) != 2) {
+        printf("Entrada invalida! Digite novamente (HH MM): ");
+        limparBuffer();
+    }
+
+    printf("Hora de saida (HH MM): ");
+    while (scanf("%d %d", &p.saidaHora, &p.saidaMin) != 2) {
+        printf("Entrada invalida! Digite novamente (HH MM): ");
+        limparBuffer();
+    }
+    limparBuffer();
+
+    pontos[totalPontos++] = p;
+    printf("\nPonto registrado com sucesso!\n");
+}
+
+// ------------------ CÁLCULOS ------------------
+float calcularHoras(RegistroPonto p) {
+    int entradaTotal = p.entradaHora * 60 + p.entradaMin;
+    int saidaTotal = p.saidaHora * 60 + p.saidaMin;
+    int diferenca = saidaTotal - entradaTotal;
+    if (diferenca < 0) diferenca += 24 * 60;
+    return diferenca / 60.0;
+}
+
+// ------------------ LISTAGENS ------------------
+void listarUsuarios() {
+    if (totalUsuarios == 0) {
+        printf("\nNenhum usuario cadastrado ainda.\n");
+        return;
+    }
+
+    printf("\n================================ LISTA DE USUARIOS ================================\n");
+    printf("| %-20s | %-10s | %-12s | %-10s |\n", "Nome", "Matricula", "Tipo", "Salario(R$)");
+    printf("-------------------------------------------------------------------------------------\n");
+    for (int i = 0; i < totalUsuarios; i++) {
+        printf("| %-20s | %-10s | %-12s | %-10.2f |\n",
+               usuarios[i].nome, usuarios[i].matricula, usuarios[i].tipo, usuarios[i].salario);
+    }
+    printf("=====================================================================================\n");
+}
+
+void listarPontos() {
+    if (totalPontos == 0) {
+        printf("\nNenhum ponto registrado ainda.\n");
+        return;
+    }
+
+    printf("\n==================================== REGISTROS DE PONTO ====================================\n");
+    printf("| %-10s | %-15s | %-12s | %-10s | %-10s |\n", "Matricula", "Tipo", "Data", "Entrada", "Saida");
+    printf("----------------------------------------------------------------------------------------------\n");
+    for (int i = 0; i < totalPontos; i++) {
+        printf("| %-10s | %-15s | %-12s | %02d:%02d       | %02d:%02d       |\n",
+               pontos[i].matricula, pontos[i].tipoPonto, pontos[i].data,
+               pontos[i].entradaHora, pontos[i].entradaMin,
+               pontos[i].saidaHora, pontos[i].saidaMin);
+    }
+    printf("==============================================================================================\n");
+}
+
+// ------------------ RELATÓRIOS ------------------
+void calcularRelatorioHorasExtras() {
+    if (totalPontos == 0) {
+        printf("\nNenhum ponto registrado ainda.\n");
+        return;
+    }
+
+    printf("\n===================================== RELATORIO DE HORAS EXTRAS =========================================\n");
+    printf("| %-20s | %-10s | %-8s | %-8s | %-10s |\n", "Funcionario", "Matricula", "H.50%", "H.100%", "Valor(R$)");
+    printf("-----------------------------------------------------------------------------------------------------------\n");
+
+    for (int i = 0; i < totalUsuarios; i++) {
+        float totalSemana = 0.0, totalFimSemana = 0.0;
+        float valorHora = usuarios[i].salario / JORNADA_MENSAL;
+
+        for (int j = 0; j < totalPontos; j++) {
+            if (strcmp(pontos[j].matricula, usuarios[i].matricula) == 0) {
+                if (strcmp(pontos[j].tipoPonto, "extra_semana") == 0)
+                    totalSemana += calcularHoras(pontos[j]);
+                else if (strcmp(pontos[j].tipoPonto, "extra_fimsemana") == 0)
+                    totalFimSemana += calcularHoras(pontos[j]);
+            }
+        }
+
+        float valorTotal = (totalSemana * valorHora * ADICIONAL_SEMANA) +
+                           (totalFimSemana * valorHora * ADICIONAL_FIMSEMANA);
+
+        printf("| %-20s | %-10s | %-8.1f | %-8.1f | %-10.2f |\n",
+               usuarios[i].nome, usuarios[i].matricula, totalSemana, totalFimSemana, valorTotal);
+    }
+
+    printf("=============================================================================================================\n");
+}
+
+void calcularTabelaSalarioFinal() {
+    if (totalUsuarios == 0) {
+        printf("\nNenhum usuario cadastrado.\n");
+        return;
+    }
+
+    printf("\n==================================== TABELA DE SALARIO FINAL ====================================\n");
+    printf("| %-20s | %-10s | %-10s | %-10s | %-12s | %-12s |\n",
+           "Funcionario", "Matricula", "H.50%", "H.100%", "Salario Fixo", "Salario Final");
+    printf("---------------------------------------------------------------------------------------------------\n");
+
+    for (int i = 0; i < totalUsuarios; i++) {
+        float totalSemana = 0.0, totalFimSemana = 0.0;
+        float valorHora = usuarios[i].salario / JORNADA_MENSAL;
+
+        for (int j = 0; j < totalPontos; j++) {
+            if (strcmp(pontos[j].matricula, usuarios[i].matricula) == 0) {
+                if (strcmp(pontos[j].tipoPonto, "extra_semana") == 0)
+                    totalSemana += calcularHoras(pontos[j]);
+                else if (strcmp(pontos[j].tipoPonto, "extra_fimsemana") == 0)
+                    totalFimSemana += calcularHoras(pontos[j]);
+            }
+        }
+
+        float valorExtras = (totalSemana * valorHora * ADICIONAL_SEMANA) +
+                            (totalFimSemana * valorHora * ADICIONAL_FIMSEMANA);
+        float salarioFinal = usuarios[i].salario + valorExtras;
+
+        printf("| %-20s | %-10s | %-10.1f | %-10.1f | %-12.2f | %-12.2f |\n",
+               usuarios[i].nome, usuarios[i].matricula, totalSemana, totalFimSemana,
+               usuarios[i].salario, salarioFinal);
+    }
+
+    printf("===================================================================================================\n");
+}
+
+// ------------------ MENUS ------------------
+void menuFuncionario(Usuario usuario) {
+    int opcao;
+    do {
+        printf("\n=============== MENU FUNCIONARIO =============\n");
+        printf("1. Bater ponto normal\n");
+        printf("2. Bater ponto extra (semana - 50%%)\n");
+        printf("3. Bater ponto extra (fim de semana - 100%%)\n");
+        printf("4. Sair da conta\n");
+        printf("================================================\n");
+        printf("Escolha uma opcao: ");
+        if (scanf("%d", &opcao) != 1) {
+            limparBuffer();
+            printf("Opcao invalida!\n");
+            continue;
+        }
+        limparBuffer();
+
+        switch (opcao) {
+            case 1: baterPonto(usuario.matricula, "normal"); break;
+            case 2: baterPonto(usuario.matricula, "extra_semana"); break;
+            case 3: baterPonto(usuario.matricula, "extra_fimsemana"); break;
+            case 4: printf("\nSaindo da conta...\n"); break;
+            default: printf("Opcao invalida!\n");
+        }
+    } while (opcao != 4);
+}
+
+void menuGestor(Usuario usuario) {
+    int opcao;
+    do {
+        printf("\n=============== MENU GESTOR =============\n");
+        printf("1. Bater ponto normal\n");
+        printf("2. Bater ponto extra (semana - 50%%)\n");
+        printf("3. Bater ponto extra (fim de semana - 100%%)\n");
+        printf("4. Ver usuarios cadastrados\n");
+        printf("5. Ver registros de ponto\n");
+        printf("6. Relatorio de horas extras\n");
+        printf("7. Tabela de salario final\n");
+        printf("8. Sair da conta\n");
+        printf("==========================================\n");
+        printf("Escolha uma opcao: ");
+        if (scanf("%d", &opcao) != 1) {
+            limparBuffer();
+            printf("Opcao invalida!\n");
+            continue;
+        }
+        limparBuffer();
+
+        switch (opcao) {
+            case 1: baterPonto(usuario.matricula, "normal"); break;
+            case 2: baterPonto(usuario.matricula, "extra_semana"); break;
+            case 3: baterPonto(usuario.matricula, "extra_fimsemana"); break;
+            case 4: listarUsuarios(); break;
+            case 5: listarPontos(); break;
+            case 6: calcularRelatorioHorasExtras(); break;
+            case 7: calcularTabelaSalarioFinal(); break;
+            case 8: printf("\nSaindo da conta...\n"); break;
+            default: printf("Opcao invalida!\n");
+        }
+    } while (opcao != 8);
+}
+
+// ------------------ LOGIN ------------------
+void login() {
+    char matricula[11], senha[20];
+    int encontrado = 0;
+
+    printf("\n--- Login ---\n");
+    lerString(matricula, sizeof(matricula), "Matricula: ");
+    lerString(senha, sizeof(senha), "Senha: ");
+
+    for (int i = 0; i < totalUsuarios; i++) {
+        if (strcmp(usuarios[i].matricula, matricula) == 0 &&
+            strcmp(usuarios[i].senha, senha) == 0) {
+            encontrado = 1;
+            printf("\nLogin bem-sucedido!\n");
+            printf("Bem-vindo, %s (%s)\n", usuarios[i].nome, usuarios[i].tipo);
+
+            if (strcmp(usuarios[i].tipo, "funcionario") == 0)
+                menuFuncionario(usuarios[i]);
+            else
+                menuGestor(usuarios[i]);
+            break;
+        }
+    }
+
+    if (!encontrado)
+        printf("\nMatricula ou senha incorretas!\n");
+}
+
+// ------------------ PRINCIPAL ------------------
+int main() {
+    int opcao;
+
+    do {
+        printf("\n======= MENU PRINCIPAL =======\n");
+        printf("1. Cadastrar Usuario\n");
+        printf("2. Login\n");
+        printf("3. Sair\n");
+        printf("================================\n");
+        printf("Escolha uma opcao: ");
+        if (scanf("%d", &opcao) != 1) {
+            limparBuffer();
+            printf("Opcao invalida!\n");
+            continue;
+        }
+        limparBuffer();
+
+        switch (opcao) {
+            case 1: cadastrarUsuario(); break;
+            case 2: login(); break;
+            case 3: printf("\nEncerrando o sistema... Ate logo!\n"); break;
+            default: printf("Opcao invalida!\n");
+        }
+    } while (opcao != 3);
+
+    return 0;
+}
