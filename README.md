@@ -24,29 +24,29 @@ Com base nesses registros, o programa calcula automaticamente:
 
 ## Funcionalidades
 :small_orange_diamond: **Usuários**
-- Cadastro de funcionários e gestores
-- Cada usuário possui:
-  - Nome
-  -  Matrícula (máximo de 10 dígitos)
-  -  Tipo (funcionário/gestor)
-  -  Senha
-  -  Salário mensal
+ - Cadastro de funcionários e gestores
+ - Cada usuário possui:
+   - Nome
+   -  Matrícula (máximo de 10 dígitos)
+   -  Tipo (funcionário/gestor)
+   -  Senha
+   -  Salário mensal
 
 :small_orange_diamond: **Ponto**
- -  Registro de ponto normal
- -  Registro de hora extra (semana - 50%)
- -  Registro de hora extra (fim de semana - 100%)
- -  Exibição de todos os pontos registrados
+  -  Registro de ponto normal
+  -  Registro de hora extra (semana - 50%)
+  -  Registro de hora extra (fim de semana - 100%)
+  -  Exibição de todos os pontos registrados
 
 :small_orange_diamond: **Relatórios**
- - Relatório de horas extras (por funcionário)
- - Tabela de salário final (salário base + adicionais)
- - Listagem de usuários cadastrados
+  - Relatório de horas extras (por funcionário)
+  - Tabela de salário final (salário base + adicionais)
+  - Listagem de usuários cadastrados
 
 
 :small_orange_diamond: **Login**
- - Login individual por matrícula e senha
- - Menu diferenciado para gestor e funcionário
+  - Login individual por matrícula e senha
+  - Menu diferenciado para gestor e funcionário
 
 
 ## Estrutura do Código
@@ -86,3 +86,31 @@ O código está organizado da seguinte forma:
 | ADICIONAL_SEMANA   | Multiplicador para horas extras de 50%      | 1.5     |
 | ADICIONAL_FIMSEMANA  | Multiplicador para horas extras de 100%     | 2.0    |
 | MAX_MATRICULA_LEN   | Tamanho máximo da matrícula       | 10     |
+
+
+## Exemplo de Uso
+
+:small_orange_diamond: No menu principal:
+  - Cadastrar Usuario
+  - Login
+  - Sair
+
+:small_orange_diamond: Após o login como funcionário:
+  - Bater ponto normal
+  - Bater ponto extra (semana - 50%)
+  - Bater ponto extra (fim de semana - 100%)
+  - Sair da conta
+
+:small_orange_diamond: Como gestor, você tem acesso adicional a:
+  - Ver usuarios cadastrados
+  - Ver registros de ponto
+  - Relatorio de horas extras
+  - Tabela de salario final
+  - Sair da conta
+
+## Melhorias Futuras
+- Salvamento de dados em arquivo (.txt ou .csv)
+- Edição e exclusão de usuários e pontos
+- Exportação automática de relatórios
+- Interface gráfica (GUI)
+- Integração com banco de dados
