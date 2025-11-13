@@ -50,21 +50,24 @@ Com base nesses registros, o programa calcula automaticamente:
 
 
 ## Estrutura do Código
+| Seção   | Função      | 
+| :---         |     :---:      | 
+| Cadastro   | Criação de novos usuários     | 
+| Login    | Verificação de credenciais e acesso     | 
+| Ponto| Registro de entrada e saída   | 
+| Relatórios   | Cálculo e exibição de horas extras e salário final      | 
+| Menus  | Interface textual interativa para cada tipo de usuário     | 
+| Funções auxiliares   | Leitura de strings, limpeza de buffer e cálculos de tempo      | 
 
-O código está organizado da seguinte forma:
- - **Cadastro:** Criação de novos usuários
- - **Login:** Verificação de credenciais e acesso
- - **Ponto:** Registro de entrada e saída
- - **Relatórios:** Cálculo e exibição de horas extras e salário final
- - **Menus:** Interface textual interativa para cada tipo de usuário
- - **Funções auxiliares:** Leitura de strings, limpeza de buffer e cálculos de tempo
+
+
 
 ## Como Compilar e Executar
-**Pré-requisitos**
+:small_orange_diamond: **Pré-requisitos**
 - Compilador GCC (ou equivalente)
 - Sistema operacional compatível com C padrão (Windows, Linux, macOS)
 
-**Comandos**
+:small_orange_diamond: **Comandos**
 - Compilar o programa
 >  gcc main.c -o sistema_ponto
 
@@ -72,11 +75,10 @@ O código está organizado da seguinte forma:
 > ./sistema_ponto
 
 - No Windows:
-
 > gcc main.c -o sistema_ponto.exe
 > sistema_ponto.exe
 
-**Constantes Importantes**
+:small_orange_diamond: **Constantes Importantes**
 
 | Constante    | Descrição       | Valores |
 | :---         |     :---:      |          ---: |
@@ -91,22 +93,22 @@ O código está organizado da seguinte forma:
 ## Exemplo de Uso
 
 :small_orange_diamond: No menu principal:
-  - Cadastrar Usuario
-  - Login
-  - Sair
+- Cadastrar Usuario
+- Login
+- Sair
 
 :small_orange_diamond: Após o login como funcionário:
-  - Bater ponto normal
-  - Bater ponto extra (semana - 50%)
-  - Bater ponto extra (fim de semana - 100%)
-  - Sair da conta
+- Bater ponto normal
+- Bater ponto extra (semana - 50%)
+- Bater ponto extra (fim de semana - 100%)
+- Sair da conta
 
 :small_orange_diamond: Como gestor, você tem acesso adicional a:
-  - Ver usuarios cadastrados
-  - Ver registros de ponto
-  - Relatorio de horas extras
-  - Tabela de salario final
-  - Sair da conta
+- Ver usuarios cadastrados
+- Ver registros de ponto
+- Relatorio de horas extras
+- Tabela de salario final
+- Sair da conta
 
 ## Melhorias Futuras
 - Salvamento de dados em arquivo (.txt ou .csv)
